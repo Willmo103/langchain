@@ -9,7 +9,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
   
-  <title>langchain_openai.embeddings.base &mdash; 🦜🔗 LangChain 0.1.7</title>
+  <title>langchain_openai.embeddings.base &mdash; 🦜🔗 LangChain 0.1.9</title>
   
   <link rel="canonical" href="https://api.python.langchain.com/en/latest/_modules/langchain_openai/embeddings/base.html" />
 
@@ -60,16 +60,28 @@
           <a class="sk-nav-link nav-link" href="../../../experimental_api_reference.html">Experimental</a>
         </li>
         <li class="nav-item">
+          <a class="sk-nav-link nav-link nav-more-item-mobile-items" href="../../../ai21_api_reference.html">ai21</a>
+        </li>
+        <li class="nav-item">
           <a class="sk-nav-link nav-link nav-more-item-mobile-items" href="../../../anthropic_api_reference.html">anthropic</a>
         </li>
         <li class="nav-item">
+          <a class="sk-nav-link nav-link nav-more-item-mobile-items" href="../../../astradb_api_reference.html">astradb</a>
+        </li>
+        <li class="nav-item">
           <a class="sk-nav-link nav-link nav-more-item-mobile-items" href="../../../exa_api_reference.html">exa</a>
+        </li>
+        <li class="nav-item">
+          <a class="sk-nav-link nav-link nav-more-item-mobile-items" href="../../../fireworks_api_reference.html">fireworks</a>
         </li>
         <li class="nav-item">
           <a class="sk-nav-link nav-link nav-more-item-mobile-items" href="../../../google_genai_api_reference.html">google-genai</a>
         </li>
         <li class="nav-item">
           <a class="sk-nav-link nav-link nav-more-item-mobile-items" href="../../../google_vertexai_api_reference.html">google-vertexai</a>
+        </li>
+        <li class="nav-item">
+          <a class="sk-nav-link nav-link nav-more-item-mobile-items" href="../../../groq_api_reference.html">groq</a>
         </li>
         <li class="nav-item">
           <a class="sk-nav-link nav-link nav-more-item-mobile-items" href="../../../ibm_api_reference.html">ibm</a>
@@ -101,10 +113,14 @@
         <li class="nav-item dropdown nav-more-item-dropdown">
           <a class="sk-nav-link nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Partner libs</a>
           <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+              <a class="sk-nav-dropdown-item dropdown-item" href="../../../ai21_api_reference.html">ai21</a>
               <a class="sk-nav-dropdown-item dropdown-item" href="../../../anthropic_api_reference.html">anthropic</a>
+              <a class="sk-nav-dropdown-item dropdown-item" href="../../../astradb_api_reference.html">astradb</a>
               <a class="sk-nav-dropdown-item dropdown-item" href="../../../exa_api_reference.html">exa</a>
+              <a class="sk-nav-dropdown-item dropdown-item" href="../../../fireworks_api_reference.html">fireworks</a>
               <a class="sk-nav-dropdown-item dropdown-item" href="../../../google_genai_api_reference.html">google-genai</a>
               <a class="sk-nav-dropdown-item dropdown-item" href="../../../google_vertexai_api_reference.html">google-vertexai</a>
+              <a class="sk-nav-dropdown-item dropdown-item" href="../../../groq_api_reference.html">groq</a>
               <a class="sk-nav-dropdown-item dropdown-item" href="../../../ibm_api_reference.html">ibm</a>
               <a class="sk-nav-dropdown-item dropdown-item" href="../../../mistralai_api_reference.html">mistralai</a>
               <a class="sk-nav-dropdown-item dropdown-item" href="../../../nomic_api_reference.html">nomic</a>
@@ -169,7 +185,6 @@
     <span class="n">cast</span><span class="p">,</span>
 <span class="p">)</span>
 
-<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
 <span class="kn">import</span> <span class="nn">openai</span>
 <span class="kn">import</span> <span class="nn">tiktoken</span>
 <span class="kn">from</span> <span class="nn">langchain_core.embeddings</span> <span class="kn">import</span> <span class="n">Embeddings</span>
@@ -360,9 +375,11 @@
                 <span class="s2">&quot;please use the `AzureOpenAIEmbeddings` class.&quot;</span>
             <span class="p">)</span>
         <span class="n">client_params</span> <span class="o">=</span> <span class="p">{</span>
-            <span class="s2">&quot;api_key&quot;</span><span class="p">:</span> <span class="n">values</span><span class="p">[</span><span class="s2">&quot;openai_api_key&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">get_secret_value</span><span class="p">()</span>
-            <span class="k">if</span> <span class="n">values</span><span class="p">[</span><span class="s2">&quot;openai_api_key&quot;</span><span class="p">]</span>
-            <span class="k">else</span> <span class="kc">None</span><span class="p">,</span>
+            <span class="s2">&quot;api_key&quot;</span><span class="p">:</span> <span class="p">(</span>
+                <span class="n">values</span><span class="p">[</span><span class="s2">&quot;openai_api_key&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">get_secret_value</span><span class="p">()</span>
+                <span class="k">if</span> <span class="n">values</span><span class="p">[</span><span class="s2">&quot;openai_api_key&quot;</span><span class="p">]</span>
+                <span class="k">else</span> <span class="kc">None</span>
+            <span class="p">),</span>
             <span class="s2">&quot;organization&quot;</span><span class="p">:</span> <span class="n">values</span><span class="p">[</span><span class="s2">&quot;openai_organization&quot;</span><span class="p">],</span>
             <span class="s2">&quot;base_url&quot;</span><span class="p">:</span> <span class="n">values</span><span class="p">[</span><span class="s2">&quot;openai_api_base&quot;</span><span class="p">],</span>
             <span class="s2">&quot;timeout&quot;</span><span class="p">:</span> <span class="n">values</span><span class="p">[</span><span class="s2">&quot;request_timeout&quot;</span><span class="p">],</span>
@@ -475,7 +492,7 @@
                 <span class="nb">input</span><span class="o">=</span><span class="n">tokens</span><span class="p">[</span><span class="n">i</span> <span class="p">:</span> <span class="n">i</span> <span class="o">+</span> <span class="n">_chunk_size</span><span class="p">],</span> <span class="o">**</span><span class="bp">self</span><span class="o">.</span><span class="n">_invocation_params</span>
             <span class="p">)</span>
             <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">response</span><span class="p">,</span> <span class="nb">dict</span><span class="p">):</span>
-                <span class="n">response</span> <span class="o">=</span> <span class="n">response</span><span class="o">.</span><span class="n">dict</span><span class="p">()</span>
+                <span class="n">response</span> <span class="o">=</span> <span class="n">response</span><span class="o">.</span><span class="n">model_dump</span><span class="p">()</span>
             <span class="n">batched_embeddings</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="n">r</span><span class="p">[</span><span class="s2">&quot;embedding&quot;</span><span class="p">]</span> <span class="k">for</span> <span class="n">r</span> <span class="ow">in</span> <span class="n">response</span><span class="p">[</span><span class="s2">&quot;data&quot;</span><span class="p">])</span>
 
         <span class="n">results</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="nb">float</span><span class="p">]]]</span> <span class="o">=</span> <span class="p">[[]</span> <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">texts</span><span class="p">))]</span>
@@ -494,11 +511,25 @@
                     <span class="nb">input</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="o">**</span><span class="bp">self</span><span class="o">.</span><span class="n">_invocation_params</span>
                 <span class="p">)</span>
                 <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">average_embedded</span><span class="p">,</span> <span class="nb">dict</span><span class="p">):</span>
-                    <span class="n">average_embedded</span> <span class="o">=</span> <span class="n">average_embedded</span><span class="o">.</span><span class="n">dict</span><span class="p">()</span>
+                    <span class="n">average_embedded</span> <span class="o">=</span> <span class="n">average_embedded</span><span class="o">.</span><span class="n">model_dump</span><span class="p">()</span>
                 <span class="n">average</span> <span class="o">=</span> <span class="n">average_embedded</span><span class="p">[</span><span class="s2">&quot;data&quot;</span><span class="p">][</span><span class="mi">0</span><span class="p">][</span><span class="s2">&quot;embedding&quot;</span><span class="p">]</span>
             <span class="k">else</span><span class="p">:</span>
-                <span class="n">average</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">average</span><span class="p">(</span><span class="n">_result</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">weights</span><span class="o">=</span><span class="n">num_tokens_in_batch</span><span class="p">[</span><span class="n">i</span><span class="p">])</span>
-            <span class="n">embeddings</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="n">average</span> <span class="o">/</span> <span class="n">np</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">norm</span><span class="p">(</span><span class="n">average</span><span class="p">))</span><span class="o">.</span><span class="n">tolist</span><span class="p">()</span>
+                <span class="c1"># should be same as</span>
+                <span class="c1"># average = np.average(_result, axis=0, weights=num_tokens_in_batch[i])</span>
+                <span class="n">total_weight</span> <span class="o">=</span> <span class="nb">sum</span><span class="p">(</span><span class="n">num_tokens_in_batch</span><span class="p">[</span><span class="n">i</span><span class="p">])</span>
+                <span class="n">average</span> <span class="o">=</span> <span class="p">[</span>
+                    <span class="nb">sum</span><span class="p">(</span>
+                        <span class="n">val</span> <span class="o">*</span> <span class="n">weight</span>
+                        <span class="k">for</span> <span class="n">val</span><span class="p">,</span> <span class="n">weight</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">embedding</span><span class="p">,</span> <span class="n">num_tokens_in_batch</span><span class="p">[</span><span class="n">i</span><span class="p">])</span>
+                    <span class="p">)</span>
+                    <span class="o">/</span> <span class="n">total_weight</span>
+                    <span class="k">for</span> <span class="n">embedding</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="o">*</span><span class="n">_result</span><span class="p">)</span>
+                <span class="p">]</span>
+
+            <span class="c1"># should be same as</span>
+            <span class="c1">#  embeddings[i] = (average / np.linalg.norm(average)).tolist()</span>
+            <span class="n">magnitude</span> <span class="o">=</span> <span class="nb">sum</span><span class="p">(</span><span class="n">val</span><span class="o">**</span><span class="mi">2</span> <span class="k">for</span> <span class="n">val</span> <span class="ow">in</span> <span class="n">average</span><span class="p">)</span> <span class="o">**</span> <span class="mf">0.5</span>
+            <span class="n">embeddings</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="n">val</span> <span class="o">/</span> <span class="n">magnitude</span> <span class="k">for</span> <span class="n">val</span> <span class="ow">in</span> <span class="n">average</span><span class="p">]</span>
 
         <span class="k">return</span> <span class="n">embeddings</span>
 
@@ -587,7 +618,7 @@
             <span class="p">)</span>
 
             <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">response</span><span class="p">,</span> <span class="nb">dict</span><span class="p">):</span>
-                <span class="n">response</span> <span class="o">=</span> <span class="n">response</span><span class="o">.</span><span class="n">dict</span><span class="p">()</span>
+                <span class="n">response</span> <span class="o">=</span> <span class="n">response</span><span class="o">.</span><span class="n">model_dump</span><span class="p">()</span>
             <span class="n">batched_embeddings</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="n">r</span><span class="p">[</span><span class="s2">&quot;embedding&quot;</span><span class="p">]</span> <span class="k">for</span> <span class="n">r</span> <span class="ow">in</span> <span class="n">response</span><span class="p">[</span><span class="s2">&quot;data&quot;</span><span class="p">])</span>
 
         <span class="n">results</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="nb">float</span><span class="p">]]]</span> <span class="o">=</span> <span class="p">[[]</span> <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">texts</span><span class="p">))]</span>
@@ -604,11 +635,24 @@
                     <span class="nb">input</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="o">**</span><span class="bp">self</span><span class="o">.</span><span class="n">_invocation_params</span>
                 <span class="p">)</span>
                 <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">average_embedded</span><span class="p">,</span> <span class="nb">dict</span><span class="p">):</span>
-                    <span class="n">average_embedded</span> <span class="o">=</span> <span class="n">average_embedded</span><span class="o">.</span><span class="n">dict</span><span class="p">()</span>
+                    <span class="n">average_embedded</span> <span class="o">=</span> <span class="n">average_embedded</span><span class="o">.</span><span class="n">model_dump</span><span class="p">()</span>
                 <span class="n">average</span> <span class="o">=</span> <span class="n">average_embedded</span><span class="p">[</span><span class="s2">&quot;data&quot;</span><span class="p">][</span><span class="mi">0</span><span class="p">][</span><span class="s2">&quot;embedding&quot;</span><span class="p">]</span>
             <span class="k">else</span><span class="p">:</span>
-                <span class="n">average</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">average</span><span class="p">(</span><span class="n">_result</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">weights</span><span class="o">=</span><span class="n">num_tokens_in_batch</span><span class="p">[</span><span class="n">i</span><span class="p">])</span>
-            <span class="n">embeddings</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="n">average</span> <span class="o">/</span> <span class="n">np</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">norm</span><span class="p">(</span><span class="n">average</span><span class="p">))</span><span class="o">.</span><span class="n">tolist</span><span class="p">()</span>
+                <span class="c1"># should be same as</span>
+                <span class="c1"># average = np.average(_result, axis=0, weights=num_tokens_in_batch[i])</span>
+                <span class="n">total_weight</span> <span class="o">=</span> <span class="nb">sum</span><span class="p">(</span><span class="n">num_tokens_in_batch</span><span class="p">[</span><span class="n">i</span><span class="p">])</span>
+                <span class="n">average</span> <span class="o">=</span> <span class="p">[</span>
+                    <span class="nb">sum</span><span class="p">(</span>
+                        <span class="n">val</span> <span class="o">*</span> <span class="n">weight</span>
+                        <span class="k">for</span> <span class="n">val</span><span class="p">,</span> <span class="n">weight</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">embedding</span><span class="p">,</span> <span class="n">num_tokens_in_batch</span><span class="p">[</span><span class="n">i</span><span class="p">])</span>
+                    <span class="p">)</span>
+                    <span class="o">/</span> <span class="n">total_weight</span>
+                    <span class="k">for</span> <span class="n">embedding</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="o">*</span><span class="n">_result</span><span class="p">)</span>
+                <span class="p">]</span>
+            <span class="c1"># should be same as</span>
+            <span class="c1"># embeddings[i] = (average / np.linalg.norm(average)).tolist()</span>
+            <span class="n">magnitude</span> <span class="o">=</span> <span class="nb">sum</span><span class="p">(</span><span class="n">val</span><span class="o">**</span><span class="mi">2</span> <span class="k">for</span> <span class="n">val</span> <span class="ow">in</span> <span class="n">average</span><span class="p">)</span> <span class="o">**</span> <span class="mf">0.5</span>
+            <span class="n">embeddings</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="n">val</span> <span class="o">/</span> <span class="n">magnitude</span> <span class="k">for</span> <span class="n">val</span> <span class="ow">in</span> <span class="n">average</span><span class="p">]</span>
 
         <span class="k">return</span> <span class="n">embeddings</span>
 
@@ -676,7 +720,7 @@
     <div class="container">
       <footer class="sk-content-footer">
             &copy; 2023, LangChain, Inc..
-          Last updated on Feb 15, 2024.
+          Last updated on Feb 27, 2024.
       </footer>
     </div>
   </div>

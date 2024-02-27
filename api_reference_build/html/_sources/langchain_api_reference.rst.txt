@@ -1,7 +1,7 @@
 .. langchain_api_reference:
 
 =======================
-``langchain`` 0.1.7
+``langchain`` 0.1.9
 =======================
 
 :mod:`langchain.agents`
@@ -740,16 +740,6 @@ Classes
     
     embeddings.cache.CacheBackedEmbeddings
     
-Functions
---------------
-.. currentmodule:: langchain
-
-.. autosummary::
-    :toctree: embeddings
-    :template: function.rst
-
-    
-
 :mod:`langchain.evaluation`
 ============================
 
@@ -961,16 +951,6 @@ Classes
     
     indexes.vectorstore.VectorstoreIndexCreator
     
-Functions
---------------
-.. currentmodule:: langchain
-
-.. autosummary::
-    :toctree: indexes
-    :template: function.rst
-
-    
-
 :mod:`langchain.memory`
 ========================
 
@@ -1130,26 +1110,6 @@ Classes
     
     :template: pydantic.rst
     
-    output_parsers.openai_functions.JsonKeyOutputFunctionsParser
-    
-    :template: pydantic.rst
-    
-    output_parsers.openai_functions.JsonOutputFunctionsParser
-    
-    :template: pydantic.rst
-    
-    output_parsers.openai_functions.OutputFunctionsParser
-    
-    :template: pydantic.rst
-    
-    output_parsers.openai_functions.PydanticAttrOutputFunctionsParser
-    
-    :template: pydantic.rst
-    
-    output_parsers.openai_functions.PydanticOutputFunctionsParser
-    
-    :template: pydantic.rst
-    
     output_parsers.openai_tools.JsonOutputKeyToolsParser
     
     :template: pydantic.rst
@@ -1163,10 +1123,6 @@ Classes
     :template: pydantic.rst
     
     output_parsers.pandas_dataframe.PandasDataFrameOutputParser
-    
-    :template: pydantic.rst
-    
-    output_parsers.pydantic.PydanticOutputParser
     
     :template: pydantic.rst
     
