@@ -3,6 +3,7 @@ import re
 import string
 import threading
 from concurrent.futures import ThreadPoolExecutor, wait
+from enum import Enum, auto
 from typing import Any, Dict, List, Literal, Optional, Tuple, Type
 
 from google.api_core.exceptions import (
@@ -19,14 +20,32 @@ from vertexai.language_models import (  # type: ignore
     TextEmbeddingInput,
     TextEmbeddingModel,
 )
+from vertexai.vision_models import (  # type: ignore
+    Image,
+    MultiModalEmbeddingModel,
+    MultiModalEmbeddingResponse,
+)
 
-from langchain_google_vertexai.llms import _VertexAICommon
+from langchain_google_vertexai._base import _VertexAICommon
 
 logger = logging.getLogger(__name__)
 
 _MAX_TOKENS_PER_BATCH = 20000
 _MAX_BATCH_SIZE = 250
 _MIN_BATCH_SIZE = 5
+
+
+class GoogleEmbeddingModelType(str, Enum):
+    TEXT = auto()
+    MULTIMODAL = auto()
+
+    @classmethod
+    def _missing_(cls, value: Any) -> Optional["GoogleEmbeddingModelType"]:
+        if "textembedding-gecko" in value.lower():
+            return GoogleEmbeddingModelType.TEXT
+        elif "multimodalembedding" in value.lower():
+            return GoogleEmbeddingModelType.MULTIMODAL
+        return None
 
 
 class VertexAIEmbeddings(_VertexAICommon, Embeddings):
@@ -46,7 +65,15 @@ class VertexAIEmbeddings(_VertexAICommon, Embeddings):
                 "textembedding-gecko@001"
             )
             values["model_name"] = "textembedding-gecko@001"
-        values["client"] = TextEmbeddingModel.from_pretrained(values["model_name"])
+        if (
+            GoogleEmbeddingModelType(values["model_name"])
+            == GoogleEmbeddingModelType.MULTIMODAL
+        ):
+            values["client"] = MultiModalEmbeddingModel.from_pretrained(
+                values["model_name"]
+            )
+        else:
+            values["client"] = TextEmbeddingModel.from_pretrained(values["model_name"])
         return values
 
     def __init__(
@@ -82,6 +109,23 @@ class VertexAIEmbeddings(_VertexAICommon, Embeddings):
         self.instance[
             "embeddings_task_type_supported"
         ] = not self.client._endpoint_name.endswith("/textembedding-gecko@001")
+
+        retry_errors: List[Type[BaseException]] = [
+            ResourceExhausted,
+            ServiceUnavailable,
+            Aborted,
+            DeadlineExceeded,
+        ]
+        retry_decorator = create_base_retry_decorator(
+            error_types=retry_errors, max_retries=self.max_retries
+        )
+        self.instance["get_embeddings_with_retry"] = retry_decorator(
+            self.client.get_embeddings
+        )
+
+    @property
+    def model_type(self) -> str:
+        return GoogleEmbeddingModelType(self.model_name)
 
     @staticmethod
     def _split_by_punctuation(text: str) -> List[str]:
@@ -147,30 +191,41 @@ class VertexAIEmbeddings(_VertexAICommon, Embeddings):
         self, texts: List[str], embeddings_type: Optional[str] = None
     ) -> List[List[float]]:
         """Makes a Vertex AI model request with retry logic."""
-
-        errors: List[Type[BaseException]] = [
-            ResourceExhausted,
-            ServiceUnavailable,
-            Aborted,
-            DeadlineExceeded,
-        ]
-        retry_decorator = create_base_retry_decorator(
-            error_types=errors, max_retries=self.max_retries
+        if self.model_type == GoogleEmbeddingModelType.MULTIMODAL:
+            return self._get_multimodal_embeddings_with_retry(texts)
+        return self._get_text_embeddings_with_retry(
+            texts, embeddings_type=embeddings_type
         )
 
-        @retry_decorator
-        def _completion_with_retry(texts_to_process: List[str]) -> Any:
-            if embeddings_type and self.instance["embeddings_task_type_supported"]:
-                requests = [
-                    TextEmbeddingInput(text=t, task_type=embeddings_type)
-                    for t in texts_to_process
-                ]
-            else:
-                requests = texts_to_process
-            embeddings = self.client.get_embeddings(requests)
-            return [embs.values for embs in embeddings]
+    def _get_multimodal_embeddings_with_retry(
+        self, texts: List[str]
+    ) -> List[List[float]]:
+        tasks = []
+        for text in texts:
+            tasks.append(
+                self.instance["task_executor"].submit(
+                    self.instance["get_embeddings_with_retry"],
+                    contextual_text=text,
+                )
+            )
+        if len(tasks) > 0:
+            wait(tasks)
+        embeddings = [task.result().text_embedding for task in tasks]
+        return embeddings
 
-        return _completion_with_retry(texts)
+    def _get_text_embeddings_with_retry(
+        self, texts: List[str], embeddings_type: Optional[str] = None
+    ) -> List[List[float]]:
+        """Makes a Vertex AI model request with retry logic."""
+
+        if embeddings_type and self.instance["embeddings_task_type_supported"]:
+            requests = [
+                TextEmbeddingInput(text=t, task_type=embeddings_type) for t in texts
+            ]
+        else:
+            requests = texts
+        embeddings = self.instance["get_embeddings_with_retry"](requests)
+        return [embedding.values for embedding in embeddings]
 
     def _prepare_and_validate_batches(
         self, texts: List[str], embeddings_type: Optional[str] = None
@@ -199,7 +254,7 @@ class VertexAIEmbeddings(_VertexAICommon, Embeddings):
                     return [], VertexAIEmbeddings._prepare_batches(
                         texts, self.instance["batch_size"]
                     )
-            # Figure out largest possible batch size by trying to push
+            # Figure out the largest possible batch size by trying to push
             # batches and lowering their size in half after every failure.
             first_batch = batches[0]
             first_result = []
@@ -332,5 +387,23 @@ class VertexAIEmbeddings(_VertexAICommon, Embeddings):
         Returns:
             Embedding for the text.
         """
-        embeddings = self.embed([text], 1, "RETRIEVAL_QUERY")
-        return embeddings[0]
+        return self.embed([text], 1, "RETRIEVAL_QUERY")[0]
+
+    def embed_image(self, image_path: str) -> List[float]:
+        """Embed an image.
+
+        Args:
+            image_path: Path to image (local or Google Cloud Storage) to generate
+            embeddings for.
+
+        Returns:
+            Embedding for the image.
+        """
+        if self.model_type != GoogleEmbeddingModelType.MULTIMODAL:
+            raise NotImplementedError("Only supported for multimodal models")
+
+        image = Image.load_from_file(image_path)
+        result: MultiModalEmbeddingResponse = self.instance[
+            "get_embeddings_with_retry"
+        ](image=image)
+        return result.image_embedding
